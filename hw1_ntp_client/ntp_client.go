@@ -7,17 +7,17 @@ import (
 	"time"
 )
 
-type NtpTime func(host string) (time.Time, error)
+type ntpTime func(host string) (time.Time, error)
 
-func GetNTPTime(NtpTimeFunc NtpTime) time.Time {
-	ntp_time, err := NtpTimeFunc("ru.pool.ntp.org")
+func getNTPTime(ntpTimeFunc ntpTime) time.Time {
+	ntpTimeValue, err := ntpTimeFunc("ru.pool.ntp.org")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	return ntp_time
+	return ntpTimeValue
 }
 
 func main() {
-	fmt.Println(GetNTPTime(ntp.Time))
+	fmt.Println(getNTPTime(ntp.Time))
 }
