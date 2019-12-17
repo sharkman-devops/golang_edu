@@ -10,6 +10,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"sort"
 	"strings"
@@ -18,21 +19,21 @@ import (
 // Top10 return top10 words of string
 func Top10(input string) []string {
 	lowerInput := strings.ToLower(input)
-	cleanInput := ""
+	var cleanInput bytes.Buffer
 	for _, char := range lowerInput {
-		if char >= []rune("a")[0] && char <= []rune("z")[0] || char == []rune(" ")[0] {
-			cleanInput += string(char)
+		if char >= rune('a') && char <= rune('z') || char == rune(' ') {
+			cleanInput.WriteString(string(char))
 		}
 	}
 
-	spaceSplitted := strings.Split(cleanInput, " ")
+	spaceSplitted := strings.Split(cleanInput.String(), " ")
 	//fmt.Println(spaceSplitted)
 	wordsFreq := map[string]int{}
 	for _, word := range spaceSplitted {
 		wordsFreq[word]++
 	}
 
-	freq := make([]int, len(wordsFreq))
+	freq := make([]int, 0, len(wordsFreq))
 	for _, val := range wordsFreq {
 		freq = append(freq, val)
 	}
