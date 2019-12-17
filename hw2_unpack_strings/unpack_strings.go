@@ -35,8 +35,12 @@ func UnpackString(inputStr string) (string, error) {
 		}
 
 		if isChar(char) {
-			if index >= 2 && isSlash(rune(inputStr[index-1])) && !isSlash(rune(inputStr[index-2])) ||
-				index == 1 && isSlash(rune(inputStr[index-1])) {
+			if index >= 2 && isSlash(rune(inputStr[index-1])) && !isSlash(rune(inputStr[index-2])) {
+				// \a => error
+				return "", errors.New("wrong sequence")
+			}
+
+			if index == 1 && isSlash(rune(inputStr[index-1])) {
 				// \a => error
 				return "", errors.New("wrong sequence")
 			}
