@@ -7,54 +7,69 @@ import (
 )
 
 func TestIsNumber(t *testing.T) {
-	assert.Equal(t, true, isNumber([]rune("0")[0]), "'0' => true")
-	assert.Equal(t, true, isNumber([]rune("9")[0]), "'9' => true")
-	assert.Equal(t, false, isNumber([]rune("A")[0]), "'A' => false")
-	assert.Equal(t, false, isNumber([]rune("\\")[0]), "'A' => false")
+	assert.Equal(t, true, isNumber(rune('0')), "'0' => true")
+	assert.Equal(t, true, isNumber(rune('9')), "'9' => true")
+	assert.Equal(t, false, isNumber(rune('A')), "'A' => false")
+	assert.Equal(t, false, isNumber(rune('\\')), "'A' => false")
 }
 
 func TestIsChar(t *testing.T) {
-	assert.Equal(t, true, isChar([]rune("A")[0]), "'A' => true")
-	assert.Equal(t, true, isChar([]rune("z")[0]), "'z' => true")
-	assert.Equal(t, false, isChar([]rune("5")[0]), "'5' => false")
-	assert.Equal(t, false, isChar([]rune("\\")[0]), "'\\' => false")
+	assert.Equal(t, true, isChar(rune('A')), "'A' => true")
+	assert.Equal(t, true, isChar(rune('z')), "'z' => true")
+	assert.Equal(t, false, isChar(rune('5')), "'5' => false")
+	assert.Equal(t, false, isChar(rune('\\')), "'\\' => false")
 }
 
 func TestIsSlash(t *testing.T) {
-	assert.Equal(t, false, isSlash([]rune("A")[0]), "'A' => false")
-	assert.Equal(t, false, isSlash([]rune("z")[0]), "'z' => false")
-	assert.Equal(t, false, isSlash([]rune("5")[0]), "'5' => false")
-	assert.Equal(t, true, isSlash([]rune("\\")[0]), "'\\' => true")
+	assert.Equal(t, false, isSlash(rune('A')), "'A' => false")
+	assert.Equal(t, false, isSlash(rune('z')), "'z' => false")
+	assert.Equal(t, false, isSlash(rune('5')), "'5' => false")
+	assert.Equal(t, true, isSlash(rune('\\')), "'\\' => true")
 }
 
 func TestMultiplyChar(t *testing.T) {
-	assert.Equal(t, "ZZZ", multiplyChar([]rune("Z")[0], 3), "should be equal")
-	assert.Equal(t, "", multiplyChar([]rune("Z")[0], 0), "should be equal")
-	assert.Equal(t, "ZZZZZZZZZ", multiplyChar([]rune("Z")[0], 9), "should be equal")
+	assert.Equal(t, "ZZZ", multiplyChar(rune('Z'), 3), "should be equal")
+	assert.Equal(t, "", multiplyChar(rune('Z'), 0), "should be equal")
+	assert.Equal(t, "ZZZZZZZZZ", multiplyChar(rune('Z'), 9), "should be equal")
+}
+
+type dataStr struct {
+	input  string
+	output string
+}
+
+var testDataStr = []dataStr{
+	{
+		input:  "a4bc2d5e",
+		output: "aaaabccddddde",
+	},
+	{
+		input:  "abcd",
+		output: "abcd",
+	},
+	{
+		input:  "qwe\\4\\5",
+		output: "qwe45",
+	},
+	{
+		input:  "qwe\\45",
+		output: "qwe44444",
+	},
+	{
+		input:  "qwe\\\\5",
+		output: "qwe\\\\\\\\\\",
+	},
 }
 
 func TestUnpackString(t *testing.T) {
-	val, err := UnpackString("a4bc2d5e")
-	assert.Equal(t, "aaaabccddddde", val, "should be equal")
-	assert.Nil(t, err)
+	for i := 0; i < len(testDataStr); i++ {
+		expected := testDataStr[i].output
+		actual, err := UnpackString(testDataStr[i].input)
+		assert.Equal(t, expected, actual, "should be equal")
+		assert.Nil(t, err)
+	}
 
-	val, err = UnpackString("abcd")
-	assert.Equal(t, "abcd", val, "should be equal")
-	assert.Nil(t, err)
-
-	val, err = UnpackString("45")
+	val, err := UnpackString("45")
 	assert.Equal(t, "", val, "should be equal")
 	assert.NotNil(t, err)
-
-	val, err = UnpackString("qwe\\4\\5")
-	assert.Equal(t, "qwe45", val, "should be equal")
-	assert.Nil(t, err)
-
-	val, err = UnpackString("qwe\\45")
-	assert.Equal(t, "qwe44444", val, "should be equal")
-	assert.Nil(t, err)
-
-	val, err = UnpackString("qwe\\\\5")
-	assert.Equal(t, "qwe\\\\\\\\\\", val, "should be equal")
-	assert.Nil(t, err)
 }

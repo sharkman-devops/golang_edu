@@ -73,24 +73,24 @@ func UnpackString(inputStr string) (string, error) {
 }
 
 func isNumber(char rune) bool {
-	if char >= []rune("0")[0] && char <= []rune("9")[0] {
+	if char >= rune('0') && char <= rune('9') {
 		return true
 	}
 	return false
 }
 
 func isChar(char rune) bool {
-	if char >= []rune("A")[0] &&
-		char <= []rune("Z")[0] ||
-		char >= []rune("a")[0] &&
-			char <= []rune("z")[0] {
+	if char >= rune('A') &&
+		char <= rune('Z') ||
+		char >= rune('a') &&
+			char <= rune('z') {
 		return true
 	}
 	return false
 }
 
 func isSlash(char rune) bool {
-	if char == []rune("\\")[0] {
+	if char == rune('\\') {
 		return true
 	}
 	return false
