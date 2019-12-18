@@ -16,6 +16,8 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
+	"unicode"
 )
 
 // UnpackString function for unpack string like: "a4bc2d5e" => "aaaabccddddde"
@@ -25,16 +27,17 @@ func UnpackString(inputStr string) (string, error) {
 	for index, char := range inputStr {
 		//fmt.Println(string(char))
 
-		if index == 0 && !isSlash(char) && !isChar(char) {
+		if index == 0 && !isSlash(char) && !unicode.IsLetter(char) {
 			return "", errors.New("first symbol must be a char(a-z or A-Z) or '\\'")
 		}
 
-		var prevChar rune = 0
+		prevChar := ""
 		if len(result) >= 1 {
-			prevChar = []rune(result)[len(result)-1:][0]
+			prevChar = result[len(result)-1:]
 		}
 
-		if isChar(char) {
+		switch {
+		case unicode.IsLetter(char):
 			if index >= 2 && isSlash(rune(inputStr[index-1])) && !isSlash(rune(inputStr[index-2])) {
 				// \a => error
 				return "", errors.New("wrong sequence")
@@ -46,47 +49,27 @@ func UnpackString(inputStr string) (string, error) {
 			}
 
 			result += string(char)
-
-		} else if isNumber(char) {
+		case unicode.IsDigit(char):
 			if index >= 2 && isSlash(rune(inputStr[index-1])) && isSlash(rune(inputStr[index-2])) {
 				// \\5 => \\\\\
 				num, _ := strconv.Atoi(string(char))
-				result += multiplyChar(prevChar, num-1)
+				result += strings.Repeat(prevChar, num-1)
 			} else if isSlash(rune(inputStr[index-1])) {
 				// \5 => 5
 				result += string(char)
 			} else {
 				// a5 => aaaaa
 				num, _ := strconv.Atoi(string(char))
-				result += multiplyChar(prevChar, num-1)
+				result += strings.Repeat(prevChar, num-1)
 			}
-		} else if isSlash(char) {
+		case isSlash(char):
 			if index >= 1 && isSlash(rune(inputStr[index-1])) {
 				// \\ => \
 				result += string(char)
 			}
-
 		}
-
 	}
 	return result, nil
-}
-
-func isNumber(char rune) bool {
-	if char >= rune('0') && char <= rune('9') {
-		return true
-	}
-	return false
-}
-
-func isChar(char rune) bool {
-	if char >= rune('A') &&
-		char <= rune('Z') ||
-		char >= rune('a') &&
-			char <= rune('z') {
-		return true
-	}
-	return false
 }
 
 func isSlash(char rune) bool {
@@ -94,14 +77,6 @@ func isSlash(char rune) bool {
 		return true
 	}
 	return false
-}
-
-func multiplyChar(char rune, multiplier int) (result string) {
-	//fmt.Println(char, multiplier)
-	for i := 0; i < multiplier; i++ {
-		result += string(char)
-	}
-	return result
 }
 
 func main() {
