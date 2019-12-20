@@ -49,7 +49,6 @@ func Top10(input string) []string {
 
 	sort.Slice(wordsFreqSlice, func(i, j int) bool { return wordsFreqSlice[i].freq > wordsFreqSlice[j].freq })
 
-	fmt.Println(wordsFreqSlice)
 	top10 := []string{}
 	maxLen := 10
 	if len(wordsFreqSlice) < 10 {
