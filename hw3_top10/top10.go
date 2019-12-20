@@ -10,54 +10,56 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"sort"
 	"strings"
+	"unicode"
 )
 
 // Top10 return top10 words of string
 func Top10(input string) []string {
 	lowerInput := strings.ToLower(input)
-	var cleanInput bytes.Buffer
-	for _, char := range lowerInput {
-		if char >= rune('a') && char <= rune('z') || char == rune(' ') {
-			cleanInput.WriteString(string(char))
+	f := func(c rune) bool {
+		return !unicode.IsLetter(c)
+	}
+	cleanInputSlice := strings.FieldsFunc(lowerInput, f)
+
+	type wordFreq struct {
+		word string
+		freq int
+	}
+	wordsFreqSlice := []wordFreq{}
+
+	type indexAndCount struct {
+		index int
+		count int
+	}
+	wordsFreqMap := make(map[string]indexAndCount)
+
+	for _, word := range cleanInputSlice {
+		_, ok := wordsFreqMap[word]
+		if ok {
+			wordsFreqMap[word] = indexAndCount{index: wordsFreqMap[word].index, count: wordsFreqMap[word].count + 1}
+			wordsFreqSlice[wordsFreqMap[word].index] = wordFreq{word: word, freq: wordsFreqMap[word].count}
+		} else {
+			wordsFreqMap[word] = indexAndCount{index: len(wordsFreqSlice), count: 1}
+			wordsFreqSlice = append(wordsFreqSlice, wordFreq{word, 1})
 		}
 	}
 
-	spaceSplitted := strings.Split(cleanInput.String(), " ")
-	//fmt.Println(spaceSplitted)
-	wordsFreq := map[string]int{}
-	for _, word := range spaceSplitted {
-		wordsFreq[word]++
-	}
+	sort.Slice(wordsFreqSlice, func(i, j int) bool { return wordsFreqSlice[i].freq > wordsFreqSlice[j].freq })
 
-	freq := make([]int, 0, len(wordsFreq))
-	for _, val := range wordsFreq {
-		freq = append(freq, val)
-	}
-
-	sort.Ints(freq)
-	var top10Freq []int
-	if len(freq) >= 10 {
-		top10Freq = freq[len(freq)-10:]
-	} else {
-		top10Freq = freq[:]
-	}
-
+	fmt.Println(wordsFreqSlice)
 	top10 := []string{}
-	for _, value := range top10Freq {
-		for key, val := range wordsFreq {
-			if val == value {
-				top10 = append(top10, key)
-				delete(wordsFreq, key)
-			}
-		}
+	maxLen := 10
+	if len(wordsFreqSlice) < 10 {
+		maxLen = len(wordsFreqSlice)
 	}
 
-	//fmt.Println(top10Freq)
-	//fmt.Println(wordsFreq)
+	for i := 0; i < maxLen; i++ {
+		top10 = append(top10, wordsFreqSlice[i].word)
+	}
+
 	return top10
 }
 

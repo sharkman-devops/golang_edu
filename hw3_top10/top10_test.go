@@ -23,7 +23,7 @@ var testDataStr = []dataStr{
 	},
 	{
 		input:  "",
-		output: []string{""},
+		output: []string{},
 	},
 }
 
