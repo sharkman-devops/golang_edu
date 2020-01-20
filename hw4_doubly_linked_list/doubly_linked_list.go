@@ -38,12 +38,11 @@ func (d *DoublyLinkedList) PushFront(v interface{}) {
 	}
 	if firstItem == nil {
 		d.last = &newItem
-	}
-	d.first = &newItem
-
-	if firstItem != nil {
+	} else {
 		firstItem.prev = &newItem
 	}
+
+	d.first = &newItem
 }
 
 // PushBack - inserts item after the last item
@@ -57,14 +56,12 @@ func (d *DoublyLinkedList) PushBack(v interface{}) {
 	}
 	if lastItem == nil {
 		d.first = &newItem
-	}
-
-	d.last = &newItem
-
-	if lastItem != nil {
+	} else {
 		newItem.prev = lastItem
 		lastItem.next = &newItem
 	}
+
+	d.last = &newItem
 }
 
 // Remove item from a Doubly Linked List, returns nil or error
