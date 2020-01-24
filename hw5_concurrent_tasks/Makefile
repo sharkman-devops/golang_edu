@@ -47,4 +47,5 @@ golint_check:
 
 .PHONY: tests
 tests:
+	go test -v
 	go test -race -v
