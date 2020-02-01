@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 	"io"
 	"os"
@@ -77,7 +78,6 @@ func Copy(from string, to string, limit int, offset int) error {
 	defer dst.Close()
 
 	// count
-	fmt.Println(limit64)
 	bc := getBar(limit64)
 	defer bc.bar.Finish()
 	srcReader := io.TeeReader(src, bc)
@@ -95,8 +95,26 @@ func Copy(from string, to string, limit int, offset int) error {
 	return nil
 }
 
+var input string
+var output string
+var offset int
+var limit int
+
+func init() {
+	flag.StringVar(&input, "src", "", "file to read from")
+	flag.StringVar(&output, "dst", "", "file to write to")
+	flag.IntVar(&offset, "offset", 0, "offset in the src file")
+	flag.IntVar(&limit, "limit", 0, "limit in the src file")
+}
+
 func main() {
-	err := Copy("/tmp/src", "/tmp/dst", 0, 0)
+	flag.Parse()
+	if input == "" || output == "" {
+		flag.Usage()
+		os.Exit(2)
+	}
+
+	err := Copy(input, output, limit, offset)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
